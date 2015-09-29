@@ -1,0 +1,79 @@
+/***************************************************************
+ **                                                           **
+ **     Mandebrot Set          								  **
+ **                                                           **
+ ***************************************************************/
+
+#include <stdio.h>
+#define ImagemAltura 768
+#define ImagemLargura 1026
+int main(int argc, const char * argv[])
+{
+    static int imagem[ImagemAltura][ImagemLargura];
+    float MinRe= -2.4;
+    float MaxRe= 1.0;
+    float MinIm= -1.2;
+    float  MaxIm= 1.5;//MinIm+(MaxRe-MinRe)*ImageHeight/ImageWidth;
+    double Im_factor;  double Re_factor;
+    int iteracoes ;
+    int dentro;
+    FILE *fp;
+    fp= fopen("mandelbrot.pgm","w+");
+      fprintf(fp,"%s \n","P2");
+    fprintf(fp,"%d %d \n",1026, 768);
+    fprintf(fp,"%d \n",15);
+    
+       printf("Number of iterations: \n");
+    scanf("%d",&iteracoes);
+  
+    printf("Left low point: ");
+    scanf("%f %f",&MaxRe,&MinIm );
+    
+    printf("right Up point: \n");
+    scanf("%f %f",&MinRe,&MaxIm);
+    
+    //Largura do pixel
+  
+    Re_factor= (MaxRe-MinRe)/ImagemLargura; //(MaxRe-MinRe)/(ImagemLargura);
+    //Altura do pixel
+   
+    Im_factor= (MaxIm-MinIm)/ImagemAltura; //(MaxIm-MinIm)/(ImagemAltura);
+    
+
+    
+    for(int y=0; y<ImagemAltura; ++y)
+    {
+      fprintf(fp,"\n");
+        double c_im = MaxIm - y*Im_factor;//*0.0035;
+        for(int x=0; x<ImagemLargura; ++x)
+        {
+            double c_re = MinRe + x*Re_factor;//*0.0033;
+            
+            double Z_re = c_re, Z_im = c_im;
+            dentro = 1;
+            for(int n=0; n<iteracoes; ++n)
+            {
+                double Z_re2 = Z_re*Z_re, Z_im2 = Z_im*Z_im;
+                if(Z_re2 + Z_im2 > 4)
+                {
+                    dentro = 0;
+                    break;
+                }
+              
+                Z_im = 2*Z_re*Z_im + c_im;
+                Z_re = Z_re2 - Z_im2 + c_re;
+            }
+            if(dentro==1){
+                imagem[y][x]=0;
+                fprintf(fp,"%d ",imagem[y][x]);
+            }
+         else if(dentro==0){
+             imagem[y][x]=15;
+             fprintf(fp,"%d ",imagem[y][x]);
+          }
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
